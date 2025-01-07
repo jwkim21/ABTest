@@ -3,10 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My GitHub Page</title>
+    <title>Audio AB Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        audio {
+            width: 200px;
+        }
+        .center {
+            text-align: center;
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-color: white;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position-x: 100%;
+            background-position-y: 5px;
+            width: 150px;
+            margin: 5px 0;
+        }
+
+        select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .center label {
+            font-size: 18px;
+            color: blue;
+        }
+        .center input[type="text"] {
+            padding: 12px;
+            font-size: 18px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .center button {
+            padding: 12px 20px;
+            font-size: 18px;
+            color: blue;
+            border-radius: 5px;
+            border: 1px solid blue;
+            background-color: white;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to My GitHub Page!</h1>
-    <p>This is a simple webpage hosted on GitHub Pages.</p>
+    <h1>Audio AB Test</h1>
+    <p>청취 후, 두 음성 중 더 선호하는 띄어읽기 방식을 선택해주세요.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Sentence</th>
+                <th>Audio A</th>
+                <th>Audio B</th>
+                <th>Your Choice</th>
+            </tr>
+        </thead>
+        <tbody id="audioTable">
+            <!-- Rows will be dynamically generated -->
+        </tbody>
+    </table>
+
+    <div class="center">
+        <label for="name">Your Name:</label>
+        <input type="text" id="name" placeholder="Enter your name">
+        <button id="submitBtn">제출</button>
+    </div>
+    <div class="center">
+        <label for="name">제출 클릭 후 다운로드 된 [이름]_results.csv 파일을 result 폴더에 업로드 해주세요!!</label>
+    </div>
+
+    <script>
+        // List of sentences to display in the table
+        const sentences = [
+            "기상청은 이날 \"충남권과 전라권을 중심으로 강하고 매우 많은 눈이 내리겠고, 빙판길과 도로 살얼음이 나타나는 곳이 많겠다\"고 예보했다.",
+            "7~9일 내리는 눈·비는 대기 하층과 지상의 미세한 기온 차이로 인해 같은 시·군·구 내에서도 고도별 강수 형태가 달라지고, 적설의 차이가 있겠다.",
+            "일부 비수도권 사립대에서 이뤄졌던 학부 등록금 인상이 올해는 서울 시내 대학들로 확산하고 있다.",
+            "지난해 전세금을 돌려받지 못한 세입자가 법원에 임차권등기명령을 신청한 건수가 역대 최대치를 기록했습니다.",
+            "이 간결함의 철학은 파이썬 문법에도 그대로 적용되어 파이썬 프로그래밍을 하는 사람들은 잘 정리되어 있는 소스코드를 볼 수 있다.",
+            "내 나이 여섯 살 적에, 나는 '자연의 진실한 이야기'라는 제목의 원시림에 관한 책에서 근사한 그림 하나를 본적이 있다.",
+            "특히 이 부분에서 자료가 부족해서 분석하는데 시간이 오래 걸리고 있어요.",
+            "아저씨, 여기서 버스 정류장까지 어떻게 가는지 알려주실 수 있나요?",
+            "바람에 흩날리는 낙엽처럼 그의 마음은 쓸쓸함으로 가득 채워졌고 텅 빈 방 안에는 그의 쓸쓸한 발자국 소리만이 메아리쳤다.",
+            "울창한 숲 속을 걸으며 새들의 지저귀는 소리와 함께 자연의 아름다움을 만끽했다.",
+        ];
+
+        const audioTable = document.getElementById('audioTable');
+
+        // Dynamically generate rows for each sentence
+        sentences.forEach((sentence, index) => {
+            const row = document.createElement('tr');
+
+            // Add sentence column
+            const sentenceCell = document.createElement('td');
+            sentenceCell.textContent = sentence;
+            row.appendChild(sentenceCell);
+
+            // Add audio element for A
+            const audioACell = document.createElement('td');
+            const audioA = document.createElement('audio');
+            audioA.controls = true; // Enable HTML5 audio controls
+            audioA.src = `audio_set_A/audio${index + 1}.wav`; // Set audio source
+            audioACell.appendChild(audioA);
+            row.appendChild(audioACell);
+
+            // Add audio element for B
+            const audioBCell = document.createElement('td');
+            const audioB = document.createElement('audio');
+            audioB.controls = true; // Enable HTML5 audio controls
+            audioB.src = `audio_set_B/audio${index + 1}.wav`; // Set audio source
+            audioBCell.appendChild(audioB);
+            row.appendChild(audioBCell);
+
+            // Add dropdown menu for user choice
+            const choiceCell = document.createElement('td');
+            const choiceSelect = document.createElement('select');
+            choiceSelect.innerHTML = `
+                <option value="">Select</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+            `; // Dropdown options
+            choiceCell.appendChild(choiceSelect);
+            row.appendChild(choiceCell);
+
+            audioTable.appendChild(row); // Append the row to the table body
+        });
+
+        // Handle form submission
+        document.getElementById('submitBtn').onclick = () => {
+            const name = document.getElementById('name').value.trim(); // Get user name
+            if (!name) {
+                alert('Please enter your name.'); // Alert if name is not entered
+                return;
+            }
+
+            const choices = Array.from(audioTable.rows).map(row => row.cells[3].querySelector('select').value);
+            if (choices.includes("")) {
+                alert('Please select your choice for all sentences.');
+                return;
+            }
+
+            const results = sentences.map((sentence, index) => ({
+                sentence: sentence,
+                choice: choices[index]
+            }));
+
+            saveResults(name, results); // Save results to CSV
+        };
+
+        // Save results as a CSV file
+        function saveResults(name, results) {
+            // Format data into CSV format
+            const csvData = results.map(r => `${r.choice}`).join('\n');
+            const csvBlob = new Blob(["Choice\n" + csvData], { type: 'text/csv' });
+            const csvUrl = URL.createObjectURL(csvBlob); // Create downloadable URL
+
+            const downloadLink = document.createElement('a'); // Create anchor element for download
+            downloadLink.href = csvUrl;
+            downloadLink.download = `${name}_results.csv`; // Set file name to include user's name
+            downloadLink.click(); // Trigger download
+            URL.revokeObjectURL(csvUrl); // Revoke the URL
+
+            alert('Your results have been saved. Thank you!'); // Confirmation message
+        }
+    </script>
+
 </body>
 </html>
